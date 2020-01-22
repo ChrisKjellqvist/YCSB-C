@@ -6,26 +6,22 @@
 //  Copyright (c) 2014 Jinglei Ren <jinglei@ren.systems>.
 //
 
-#ifndef YCSB_C_BASIC_DB_H_
-#define YCSB_C_BASIC_DB_H_
+#ifndef YCSB_C_TCD_DB_H_
+#define YCSB_C_TCD_DB_H_
 
 #include "core/db.h"
-
-#include <iostream>
 #include <string>
-#include <mutex>
 #include "core/properties.h"
+#include <pku_memcached.h>
 
-using std::cout;
-using std::endl;
 // KVPair is std::pair<std::string, std::string>
 
 namespace ycsbc {
 
-class tcd_DB : public DB {
+class TCDDB : public DB {
  public:
   void Init() {
-    memcached_init("memcached.rdma");
+    memcached_init(0);
   }
 
   int Read(const std::string &table, const std::string &key,
@@ -40,12 +36,12 @@ class tcd_DB : public DB {
              std::vector<KVPair> &values);
 
   int Insert(const std::string &table, const std::string &key,
-             std::vector<kvpair> &values);
+             std::vector<KVPair> &values);
 
   int Delete(const std::string &table, const std::string &key);
 };
 
 } // ycsbc
 
-#endif // YCSB_C_BASIC_DB_H_
+#endif // YCSB_C_TCD_DB_H_
 
