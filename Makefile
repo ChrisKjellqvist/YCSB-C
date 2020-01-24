@@ -1,7 +1,9 @@
 CC=g++
 CFLAGS=-std=c++11 -g -Wall -pthread -I./
-LIBDIR=/u/ckjellqv/threadcached/lib
-LDFLAGS= -lpthread -ltbb -levent $(LIBDIR)/libthreadcached.so $(LIBDIR)/librpmalloc.a
+#LIBDIR=/u/ckjellqv/threadcached/lib
+LIBDIR=/u/ckjellqv/libmemcached/libmemcached/.libs
+#LDFLAGS= -lpthread -ltbb -levent $(LIBDIR)/libthreadcached.so $(LIBDIR)/librpmalloc.a
+LDFLAGS= -lpthread -ltbb -levent $(LIBDIR)/libmemcached.so 
 SUBDIRS=core db
 SUBSRCS=$(wildcard core/*.cc) $(wildcard db/*.cc)
 OBJECTS=$(SUBSRCS:.cc=.o)

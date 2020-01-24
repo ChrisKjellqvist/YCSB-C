@@ -5,6 +5,11 @@
 //  Created by Jinglei Ren on 12/17/14.
 //  Copyright (c) 2014 Jinglei Ren <jinglei@ren.systems>.
 //
+
+
+// use these definitions only if we give the right flag
+#ifdef TCD
+
 #include "tcd_db.h"
 #include <utility>
 #include <assert.h>
@@ -65,3 +70,4 @@ int TCDDB::Delete(const std::string &table, const std::string &key){
 
 };
 
+#endif

@@ -1,6 +1,8 @@
 CC=g++
-CFLAGS=-std=c++11 -c -g -Wall -fgnu-tm
-INCLUDES=-I../ -I/u/ckjellqv/threadcached/include/
+#MEMCACHED=-DTCD
+MEMCACHED=-DMCD
+CFLAGS=-std=c++11 -c -g -Wall -fgnu-tm $(MEMCACHED)
+INCLUDES=-I../ -I/u/ckjellqv/threadcached/include/ -I/u/ckjellqv/lmcd
 SOURCES=$(wildcard *.cc)
 OBJECTS=$(SOURCES:.cc=.o)
 
