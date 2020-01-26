@@ -18,9 +18,12 @@
 // WARNING: we only consider 1 field. Workloads should be cooked such that they
 // only give us 1 field!!!
 namespace ycsbc {
+  void TCDDB::Init(int tid) {
+  }
+
   int TCDDB::Read(const std::string &table, const std::string &key,
       const std::vector<std::string> *fields,
-      std::vector<KVPair> &result) {
+      std::vector<KVPair> &result, int tid) {
     std::string keystr = table + key;
     size_t v_len;
     uint32_t flags;
@@ -30,18 +33,20 @@ namespace ycsbc {
         &v_len, &flags, &err); 
     if (err == MEMCACHED_SUCCESS)
       result.push_back(std::make_pair(std::string("field0"), std::string(cstr, v_len))); 
+//    else
+//      printf("Read fail: [%d]\n", err);
     return DB::kOK;
   }
 
   int TCDDB::Scan(const std::string &table, const std::string &key,
       int len, const std::vector<std::string> *fields,
-      std::vector<std::vector<KVPair>> &result) {
+      std::vector<std::vector<KVPair>> &result, int tid) {
     assert(0 && "This is not implemented");
     return 0;
   }
 
   int TCDDB::Update(const std::string &table, const std::string &key,
-      std::vector<KVPair> &values) {
+      std::vector<KVPair> &values, int tid) {
     std::string keystr = table + key;
     std::string field, value; 
     std::tie(field, value) = values[0]; 
@@ -54,17 +59,17 @@ namespace ycsbc {
         val_str, value.size(), 
         0, 0);
   if (err != MEMCACHED_SUCCESS)
-    fprintf(stderr, "We didn't insert correctly...\n");
+    fprintf(stderr, "We didn't insert correctly...[%d]\n", err);
   return DB::kOK;
 
 }
 
 int TCDDB::Insert(const std::string &table, const std::string &key,
-    std::vector<KVPair> &values) {
-  return Update(table, key, values); 
+    std::vector<KVPair> &values, int tid) {
+  return Update(table, key, values, tid); 
 }
 
-int TCDDB::Delete(const std::string &table, const std::string &key){
+int TCDDB::Delete(const std::string &table, const std::string &key, int tid){
   assert(0 && "This is not implemented");
 }
 

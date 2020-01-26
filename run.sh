@@ -5,6 +5,7 @@ db_names=(
   "lock_stl"
   "tbb_rand"
   "tbb_scan"
+  "tcd"
 )
 
 trap 'kill $(jobs -p)' SIGINT

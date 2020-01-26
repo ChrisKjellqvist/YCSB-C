@@ -20,47 +20,47 @@ class Client {
  public:
   Client(DB &db, CoreWorkload &wl) : db_(db), workload_(wl) { }
   
-  virtual bool DoInsert();
-  virtual bool DoTransaction();
+  virtual bool DoInsert(int tid);
+  virtual bool DoTransaction(int tid);
   
   virtual ~Client() { }
   
  protected:
   
-  virtual int TransactionRead();
-  virtual int TransactionReadModifyWrite();
-  virtual int TransactionScan();
-  virtual int TransactionUpdate();
-  virtual int TransactionInsert();
+  virtual int TransactionRead(int tid);
+  virtual int TransactionReadModifyWrite(int tid);
+  virtual int TransactionScan(int tid);
+  virtual int TransactionUpdate(int tid);
+  virtual int TransactionInsert(int tid);
   
   DB &db_;
   CoreWorkload &workload_;
 };
 
-inline bool Client::DoInsert() {
+inline bool Client::DoInsert(int tid) {
   std::string key = workload_.NextSequenceKey();
   std::vector<DB::KVPair> pairs;
   workload_.BuildValues(pairs);
-  return (db_.Insert(workload_.NextTable(), key, pairs) == DB::kOK);
+  return (db_.Insert(workload_.NextTable(), key, pairs, tid) == DB::kOK);
 }
 
-inline bool Client::DoTransaction() {
+inline bool Client::DoTransaction(int tid) {
   int status = -1;
   switch (workload_.NextOperation()) {
     case READ:
-      status = TransactionRead();
+      status = TransactionRead(tid);
       break;
     case UPDATE:
-      status = TransactionUpdate();
+      status = TransactionUpdate(tid);
       break;
     case INSERT:
-      status = TransactionInsert();
+      status = TransactionInsert(tid);
       break;
     case SCAN:
-      status = TransactionScan();
+      status = TransactionScan(tid);
       break;
     case READMODIFYWRITE:
-      status = TransactionReadModifyWrite();
+      status = TransactionReadModifyWrite(tid);
       break;
     default:
       throw utils::Exception("Operation request is not recognized!");
@@ -69,20 +69,20 @@ inline bool Client::DoTransaction() {
   return (status == DB::kOK);
 }
 
-inline int Client::TransactionRead() {
+inline int Client::TransactionRead(int tid) {
   const std::string &table = workload_.NextTable();
   const std::string &key = workload_.NextTransactionKey();
   std::vector<DB::KVPair> result;
   if (!workload_.read_all_fields()) {
     std::vector<std::string> fields;
     fields.push_back("field" + workload_.NextFieldName());
-    return db_.Read(table, key, &fields, result);
+    return db_.Read(table, key, &fields, result, tid);
   } else {
-    return db_.Read(table, key, NULL, result);
+    return db_.Read(table, key, NULL, result, tid);
   }
 }
 
-inline int Client::TransactionReadModifyWrite() {
+inline int Client::TransactionReadModifyWrite(int tid) {
   const std::string &table = workload_.NextTable();
   const std::string &key = workload_.NextTransactionKey();
   std::vector<DB::KVPair> result;
@@ -90,9 +90,9 @@ inline int Client::TransactionReadModifyWrite() {
   if (!workload_.read_all_fields()) {
     std::vector<std::string> fields;
     fields.push_back("field" + workload_.NextFieldName());
-    db_.Read(table, key, &fields, result);
+    db_.Read(table, key, &fields, result, tid);
   } else {
-    db_.Read(table, key, NULL, result);
+    db_.Read(table, key, NULL, result, tid);
   }
 
   std::vector<DB::KVPair> values;
@@ -101,10 +101,10 @@ inline int Client::TransactionReadModifyWrite() {
   } else {
     workload_.BuildUpdate(values);
   }
-  return db_.Update(table, key, values);
+  return db_.Update(table, key, values, tid);
 }
 
-inline int Client::TransactionScan() {
+inline int Client::TransactionScan(int tid) {
   const std::string &table = workload_.NextTable();
   const std::string &key = workload_.NextTransactionKey();
   int len = workload_.NextScanLength();
@@ -112,13 +112,13 @@ inline int Client::TransactionScan() {
   if (!workload_.read_all_fields()) {
     std::vector<std::string> fields;
     fields.push_back("field" + workload_.NextFieldName());
-    return db_.Scan(table, key, len, &fields, result);
+    return db_.Scan(table, key, len, &fields, result, tid);
   } else {
-    return db_.Scan(table, key, len, NULL, result);
+    return db_.Scan(table, key, len, NULL, result, tid);
   }
 }
 
-inline int Client::TransactionUpdate() {
+inline int Client::TransactionUpdate(int tid) {
   const std::string &table = workload_.NextTable();
   const std::string &key = workload_.NextTransactionKey();
   std::vector<DB::KVPair> values;
@@ -127,15 +127,15 @@ inline int Client::TransactionUpdate() {
   } else {
     workload_.BuildUpdate(values);
   }
-  return db_.Update(table, key, values);
+  return db_.Update(table, key, values, tid);
 }
 
-inline int Client::TransactionInsert() {
+inline int Client::TransactionInsert(int tid) {
   const std::string &table = workload_.NextTable();
   const std::string &key = workload_.NextSequenceKey();
   std::vector<DB::KVPair> values;
   workload_.BuildValues(values);
-  return db_.Insert(table, key, values);
+  return db_.Insert(table, key, values, tid);
 } 
 
 } // ycsbc

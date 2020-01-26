@@ -30,7 +30,7 @@ class BasicDB : public DB {
 
   int Read(const std::string &table, const std::string &key,
            const std::vector<std::string> *fields,
-           std::vector<KVPair> &result) {
+           std::vector<KVPair> &result, int tid) {
     std::lock_guard<std::mutex> lock(mutex_);
     cout << "READ " << table << ' ' << key;
     if (fields) {
@@ -47,7 +47,7 @@ class BasicDB : public DB {
 
   int Scan(const std::string &table, const std::string &key,
            int len, const std::vector<std::string> *fields,
-           std::vector<std::vector<KVPair>> &result) {
+           std::vector<std::vector<KVPair>> &result, int tid) {
     std::lock_guard<std::mutex> lock(mutex_);
     cout << "SCAN " << table << ' ' << key << " " << len;
     if (fields) {
@@ -63,7 +63,7 @@ class BasicDB : public DB {
   }
 
   int Update(const std::string &table, const std::string &key,
-             std::vector<KVPair> &values) {
+             std::vector<KVPair> &values, int tid) {
     std::lock_guard<std::mutex> lock(mutex_);
     cout << "UPDATE " << table << ' ' << key << " [ ";
     for (auto v : values) {
@@ -74,7 +74,7 @@ class BasicDB : public DB {
   }
 
   int Insert(const std::string &table, const std::string &key,
-             std::vector<KVPair> &values) {
+             std::vector<KVPair> &values, int tid) {
     std::lock_guard<std::mutex> lock(mutex_);
     cout << "INSERT " << table << ' ' << key << " [ ";
     for (auto v : values) {
@@ -84,7 +84,7 @@ class BasicDB : public DB {
     return 0;
   }
 
-  int Delete(const std::string &table, const std::string &key) {
+  int Delete(const std::string &table, const std::string &key, int tid) {
     std::lock_guard<std::mutex> lock(mutex_);
     cout << "DELETE " << table << ' ' << key << endl;
     return 0; 

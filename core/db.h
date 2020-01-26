@@ -24,7 +24,7 @@ class DB {
   /// Initializes any state for accessing this DB.
   /// Called once per DB client (thread); there is a single DB instance globally.
   ///
-  virtual void Init() { }
+  virtual void Init(int tid) { }
   ///
   /// Clears any state for accessing this DB.
   /// Called once per DB client (thread); there is a single DB instance globally.
@@ -42,7 +42,7 @@ class DB {
   ///
   virtual int Read(const std::string &table, const std::string &key,
                    const std::vector<std::string> *fields,
-                   std::vector<KVPair> &result) = 0;
+                   std::vector<KVPair> &result, int tid) = 0;
   ///
   /// Performs a range scan for a set of records in the database.
   /// Field/value pairs from the result are stored in a vector.
@@ -57,7 +57,7 @@ class DB {
   ///
   virtual int Scan(const std::string &table, const std::string &key,
                    int record_count, const std::vector<std::string> *fields,
-                   std::vector<std::vector<KVPair>> &result) = 0;
+                   std::vector<std::vector<KVPair>> &result, int tid) = 0;
   ///
   /// Updates a record in the database.
   /// Field/value pairs in the specified vector are written to the record,
@@ -69,7 +69,7 @@ class DB {
   /// @return Zero on success, a non-zero error code on error.
   ///
   virtual int Update(const std::string &table, const std::string &key,
-                     std::vector<KVPair> &values) = 0;
+                     std::vector<KVPair> &values, int tid) = 0;
   ///
   /// Inserts a record into the database.
   /// Field/value pairs in the specified vector are written into the record.
@@ -80,7 +80,7 @@ class DB {
   /// @return Zero on success, a non-zero error code on error.
   ///
   virtual int Insert(const std::string &table, const std::string &key,
-                     std::vector<KVPair> &values) = 0;
+                     std::vector<KVPair> &values, int tid) = 0;
   ///
   /// Deletes a record from the database.
   ///
@@ -88,7 +88,8 @@ class DB {
   /// @param key The key of the record to delete.
   /// @return Zero on success, a non-zero error code on error.
   ///
-  virtual int Delete(const std::string &table, const std::string &key) = 0;
+  virtual int Delete(const std::string &table, const std::string &key,
+                     int tid) = 0;
   
   virtual ~DB() { }
 };

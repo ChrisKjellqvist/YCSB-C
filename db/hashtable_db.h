@@ -24,15 +24,15 @@ class HashtableDB : public DB {
 
   int Read(const std::string &table, const std::string &key,
            const std::vector<std::string> *fields,
-           std::vector<KVPair> &result);
+           std::vector<KVPair> &result, int tid);
   int Scan(const std::string &table, const std::string &key,
            int len, const std::vector<std::string> *fields,
-           std::vector<std::vector<KVPair>> &result);
+           std::vector<std::vector<KVPair>> &result, int tid);
   int Update(const std::string &table, const std::string &key,
-             std::vector<KVPair> &values);
+             std::vector<KVPair> &values, int tid);
   int Insert(const std::string &table, const std::string &key,
-             std::vector<KVPair> &values);
-  int Delete(const std::string &table, const std::string &key);
+             std::vector<KVPair> &values, int tid);
+  int Delete(const std::string &table, const std::string &key, int tid);
 
  protected:
   HashtableDB(KeyHashtable *table) : key_table_(table) { }

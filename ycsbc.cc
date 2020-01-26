@@ -24,22 +24,24 @@ bool StrStartWith(const char *str, const char *pre);
 string ParseCommandLine(int argc, const char *argv[], utils::Properties &props);
 
 int DelegateClient(ycsbc::DB *db, ycsbc::CoreWorkload *wl, const int num_ops,
-    bool is_loading) {
-  db->Init();
+    bool is_loading, unsigned tid) {
+  db->Init(tid);
   ycsbc::Client client(*db, *wl);
   int oks = 0;
   for (int i = 0; i < num_ops; ++i) {
     if (is_loading) {
-      oks += client.DoInsert();
+      oks += client.DoInsert(tid);
     } else {
-      oks += client.DoTransaction();
+      oks += client.DoTransaction(tid);
     }
   }
   db->Close();
   return oks;
 }
 
+#include "/u/ckjellqv/threadcached/include/pku_memcached.h"
 int main(const int argc, const char *argv[]) {
+  memcached_init(0);
   utils::Properties props;
   string file_name = ParseCommandLine(argc, argv, props);
 
@@ -59,7 +61,7 @@ int main(const int argc, const char *argv[]) {
   int total_ops = stoi(props[ycsbc::CoreWorkload::RECORD_COUNT_PROPERTY]);
   for (int i = 0; i < num_threads; ++i) {
     actual_ops.emplace_back(async(launch::async,
-        DelegateClient, db, &wl, total_ops / num_threads, true));
+        DelegateClient, db, &wl, total_ops / num_threads, true, i));
   }
   assert((int)actual_ops.size() == num_threads);
 
@@ -77,7 +79,7 @@ int main(const int argc, const char *argv[]) {
   timer.Start();
   for (int i = 0; i < num_threads; ++i) {
     actual_ops.emplace_back(async(launch::async,
-        DelegateClient, db, &wl, total_ops / num_threads, false));
+        DelegateClient, db, &wl, total_ops / num_threads, false, i));
   }
   assert((int)actual_ops.size() == num_threads);
 
