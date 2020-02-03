@@ -39,9 +39,13 @@ int DelegateClient(ycsbc::DB *db, ycsbc::CoreWorkload *wl, const int num_ops,
   return oks;
 }
 
+#ifdef TCD
 #include "/u/ckjellqv/threadcached/include/pku_memcached.h"
+#endif
 int main(const int argc, const char *argv[]) {
+#ifdef TCD
   memcached_init(0);
+#endif
   utils::Properties props;
   string file_name = ParseCommandLine(argc, argv, props);
 

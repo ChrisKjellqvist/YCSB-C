@@ -28,6 +28,7 @@ namespace ycsbc {
     pthread_mutex_lock(&init_mutex);
     if (parent == NULL){
       parent= memcached_create(NULL);
+//      memcached_behavior_set(parent, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
       memcached_return_t rc= memcached_server_add(parent, "localhost", 11211);
       assert(rc == MEMCACHED_SUCCESS);
 
@@ -70,6 +71,7 @@ namespace ycsbc {
         key.c_str(), key.size(),
         value.c_str(), value.size(), 
         0, 0);
+    printf("success [%d]\n", err);
     if (err != MEMCACHED_SUCCESS && err != MEMCACHED_STORED){
       printf("error: %s\n", memcached_strerror(structs[tid], err));
     }
