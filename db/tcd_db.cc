@@ -15,6 +15,7 @@
 #include <assert.h>
 #include <iostream>
 #include <string.h>
+#include <hodor.h>
 
 //#define DEBUG 1
 
@@ -22,6 +23,7 @@
 // only give us 1 field!!!
 namespace ycsbc {
   void TCDDB::Init(int tid) {
+    assert(hodor_enter() == 0);
   }
 
   int TCDDB::Read(const std::string &table, const std::string &key,
@@ -34,10 +36,11 @@ namespace ycsbc {
     char *cstr =  memcached_get_internal(
         kcstr, strlen(kcstr),
         &v_len, &flags, &err); 
-    if (err == MEMCACHED_SUCCESS)
+    if (err == MEMCACHED_SUCCESS) {
       result.push_back(std::make_pair(std::string("field0"), std::string(cstr, v_len))); 
-    if (cstr != NULL)
-      free(cstr);
+      if (cstr != NULL)
+        free(cstr);
+    }
 #ifdef DEBUG
     else {
       switch(err){
