@@ -7,6 +7,7 @@
 //
 
 #ifdef MCD
+#include <mem_config.h>
 #include "tcd_db.h"
 #include <utility>
 #include <assert.h>
@@ -28,7 +29,7 @@ namespace ycsbc {
     pthread_mutex_lock(&init_mutex);
     if (parent == NULL){
       parent= memcached_create(NULL);
-//      memcached_behavior_set(parent, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
+      memcached_behavior_set(parent, MEMCACHED_BEHAVIOR_BINARY_PROTOCOL, 1);
       memcached_return_t rc= memcached_server_add(parent, "localhost", 11211);
       assert(rc == MEMCACHED_SUCCESS);
 
@@ -66,15 +67,18 @@ namespace ycsbc {
     std::string value = values[0].second; 
     size_t v_len;
     uint32_t flags;
-    memcached_return_t err = memcached_set(
-        structs[tid],
-        key.c_str(), key.size(),
-        value.c_str(), value.size(), 
-        0, 0);
-    printf("success [%d]\n", err);
-    if (err != MEMCACHED_SUCCESS && err != MEMCACHED_STORED){
-      printf("error: %s\n", memcached_strerror(structs[tid], err));
-    }
+    uint64_t num;
+    memcached_increment_with_initial(structs[tid],
+        key.c_str(), key.size(), 
+        1, 0, 0, &num);
+//    memcached_return_t err = memcached_set(
+//        structs[tid],
+//        key.c_str(), key.size(),
+//        value.c_str(), value.size(), 
+//        0, 0);
+//    if (err != MEMCACHED_SUCCESS && err != MEMCACHED_STORED){
+//      printf("error: %s\n", memcached_strerror(structs[tid], err));
+//    }
     return DB::kOK;
 
   }

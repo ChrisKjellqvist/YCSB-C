@@ -1,7 +1,6 @@
 CC=g++
-CFLAGS=-std=c++11 -O3 -Wall -pthread -I./ -DTCD -g
-LDFLAGS= -lpthread -levent ../threadcached/hodor/libhodor/libhodor.a \
-	 ../threadcached/obj/libthreadcached.so ../threadcached/ralloc/test/libralloc.a -ldl
+CFLAGS=-std=c++11 -O3 -Wall -pthread -I./ -DMCD -g
+LDFLAGS= -lpthread -levent ../trunk/libmemcached/.libs/libmemcached.so -I../trunk -ldl
 SUBDIRS=core db
 SUBSRCS=$(wildcard core/*.cc) $(wildcard db/*.cc)
 OBJECTS=$(SUBSRCS:.cc=.o)

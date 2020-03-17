@@ -9,6 +9,7 @@
 #ifndef YCSB_C_DB_FACTORY_H_
 #define YCSB_C_DB_FACTORY_H_
 
+#include <mem_config.h>
 #include "core/db.h"
 #include "core/properties.h"
 

@@ -1,26 +1,23 @@
 # Yahoo! Cloud System Benchmark
-# Workload D: Read latest workload
-#   Application example: user status updates; people want to read the latest
+# Workload B: Read mostly workload
+#   Application example: photo tagging; add a tag is an update, but most operations are to read tags
 #                        
-#   Read/update/insert ratio: 95/0/5
+#   Read/update ratio: 95/5
 #   Default data size: 1 KB records (10 fields, 100 bytes each, plus key)
-#   Request distribution: latest
+#   Request distribution: zipfian
 
-# The insert order for this is hashed, not ordered. The "latest" items may be 
-# scattered around the keyspace if they are keyed by userid.timestamp. A workload
-# which orders items purely by time, and demands the latest, is very different than 
-# workload here (which we believe is more typical of how people build systems.)
-
-recordcount=100000
-operationcount=100000
+recordcount=1000
+operationcount=5000000
 workload=com.yahoo.ycsb.workloads.CoreWorkload
 
 readallfields=true
 
 readproportion=0.95
-updateproportion=0
+updateproportion=0.05
 scanproportion=0
-insertproportion=0.05
+insertproportion=0
 
-requestdistribution=latest
+requestdistribution=zipfian
 
+fieldcount=1
+fieldlength=10000

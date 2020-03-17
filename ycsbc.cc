@@ -6,6 +6,8 @@
 //  Copyright (c) 2014 Jinglei Ren <jinglei@ren.systems>.
 //
 
+#include "db/db_factory.h"
+#include "db/tcd_db.h"
 #include <cstring>
 #include <string>
 #include <iostream>
@@ -15,7 +17,6 @@
 #include "core/timer.h"
 #include "core/client.h"
 #include "core/core_workload.h"
-#include "db/db_factory.h"
 
 using namespace std;
 
@@ -39,11 +40,43 @@ int DelegateClient(ycsbc::DB *db, ycsbc::CoreWorkload *wl, const int num_ops,
   return oks;
 }
 
-#ifdef TCD
-#include "/u/ckjellqv/threadcached/include/pku_memcached.h"
-#endif
+void itoa(unsigned i, char *str){
+  if (i == 0)
+    *(str++) = '0';
+  while(i != 0){
+    *(str++) = '0' + (i % 10);
+    i /= 10;
+  }
+  *str = 0;
+}
 int main(const int argc, const char *argv[]) {
-  memcached_init();
+//  utils::Timer<double> del_t;
+//  memcached_st st;
+//  memcached_create(&st);
+//  memcached_server_add(&st, "localhost", 11211);
+//
+//  char buff[10] = "asdfgh";
+//  char key[10];
+//  for(int i = 0; i < 100000; ++i){
+//    itoa(i, key);
+//    memcached_return_t ret; 
+//    ret = memcached_set(&st, key, strlen(key), buff, strlen(buff), 0, 0);
+//    if (ret != MEMCACHED_SUCCESS){
+//      printf("%s\n", memcached_strerror(&st, ret));
+//      assert(0);
+//    }
+//
+//  }
+//
+//  del_t.Start();
+//  for(int i = 0; i < 100000; ++i){
+//    itoa(i, key);
+//    memcached_delete(&st, key, strlen(key), 0);
+//  }
+//  double elapse = del_t.End();
+//  elapse = elapse / 100000 * 1000000;
+//  printf("%f\n", elapse);
+//  return 1;
   utils::Properties props;
   string file_name = ParseCommandLine(argc, argv, props);
 

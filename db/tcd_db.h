@@ -9,15 +9,16 @@
 #ifndef YCSB_C_TCD_DB_H_
 #define YCSB_C_TCD_DB_H_
 
+#ifdef TCD
+#include <pku_memcached.h>
+#else
+#include <mem_config.h>
+#include <libmemcached/common.h>
+#endif
 #include "core/db.h"
 #include <string>
 #include "core/properties.h"
 
-#ifdef TCD
-#include <pku_memcached.h>
-#else
-#include <libmemcached/common.h>
-#endif
 
 // KVPair is std::pair<std::string, std::string>
 
